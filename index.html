@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cross Idea Generator & Mandal Art Workshop</title>
+
+    <!-- PWA / Home Screen Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Cross Matrix">
+    <meta name="theme-color" content="#4f46e5">
+
+    <!-- Custom Icons (Base64 SVG) -->
+    <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0ZjQ2ZTUiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzkzMzNlYSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2VjNDg5OSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTIwIiBmaWxsPSJ1cmwoI2cpIi8+PHBhdGggZD0iTTE2MCAxNjBMMzUyIDM1Mk0zNTIgMTYwTDE2MCAzNTIiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0OCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSI0OCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE2MCIgY3k9IjE2MCIgcj0iMzIiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIzNTIiIGN5PSIxNjAiIHI9IjMyIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMzUyIiByPSIzMiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1MiIgY3k9IjM1MiIgcj0iMzIiIGZpbGw9IiNmZmYiLz48L3N2Zz4=" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM0ZjQ2ZTUiLz48c3RvcCBvZmZzZXQ9IjUwJSIgc3RvcC1jb2xvcj0iIzkzMzNlYSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2VjNDg5OSIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iMTIwIiBmaWxsPSJ1cmwoI2cpIi8+PHBhdGggZD0iTTE2MCAxNjBMMzUyIDM1Mk0zNTIgMTYwTDE2MCAzNTIiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSI0OCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSI0OCIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjE2MCIgY3k9IjE2MCIgcj0iMzIiIGZpbGw9IiNmZmYiLz48Y2lyY2xlIGN4PSIzNTIiIGN5PSIxNjAiIHI9IjMyIiBmaWxsPSIjZmZmIi8+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMzUyIiByPSIzMiIgZmlsbD0iI2ZmZiIvPjxjaXJjbGUgY3g9IjM1MiIgY3k9IjM1MiIgcj0iMzIiIGZpbGw9IiNmZmYiLz48L3N2Zz4=">
+    
+    <!-- Web App Manifest (Base64 JSON) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQ3Jvc3MgTWF0cml4Iiwic2hvcnRfbmFtZSI6IkNyb3NzTWF0cml4IiwiZGVzY3JpcHRpb24iOiLmjZvjgZHlkIjjgo/jgZvnmbrmg7MgJiDjnuODs+ODgOODqeODvOODiCBXb3Jrc2hvcCIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3ciOiIjZjhmYWZjIiwidGhlbWVfY29sb3ciOiIjNGY0NmU1IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlppQjRiV3h1Y3owaWFIUjBjRG92TDIzM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jaUlIWnBaWGRDYjNnOUlqQWdNQ0ExTVRJZ05URXlJajQ4WkdWbWMzNDhiR2x1WldGeVJzSmhaR2xsYm5RZ2FXUTlJbWNpSUhneFBTSXdKU0lnZVRFOUlqQWxJaUI0TWowaU1UQXdKU0lnZVRJOUlqRXdNQ1VpUGp4emRHOXdJRzlxWkM0d1pYTnBkR1ZrUFNJd01EQmNJRHd2Y1hSdmNDQnZabVp6WlhROUlqVXdKU0lnYzNSdmNDMWpiMnh2Y2owaUkyazNNek5sWVNJdlBqeHpkRzl3SUc5bVpuTmxkRDBpTVRBd0pTSWdjM1J2Y0MxamIyeHZjajBpSTJWak5EZzVPV2N2UGp3dmJHbHVaV0Z5UjNKaFpHbGxiblE+UEM5a1pXWnpQanh5WldOMElIZHBaSFJvUFNJMU1USWlJR2hsYVdkb2RDMGlOVEV5SWlCeWVEMGlNVEl3SWlCbWFXeHNQU0oxY213b0kyY3BJancrUEhCaGRHZ2daRDBpVFRFMk1DQXhOakJNTXpVeUlETTFNazB6TlRJZ01UWXdUREUyTUNBek5USWlJSE4wY205clpUMGlJMlo2WmlJZ2MzUnliMnRsTFhkcFpIUm9QU0kwT0NJZ2MzUnliMnRsTFV4cGJtVmpZWEJQU0dKdmJXRmpaWGs5SWowaU1qVTJJaUJqZVQwaU1qVTJJaUJiUFNJME9DSWdabWxzYkQwaUlXWm1aaUkvUGp4amFYSmpiR1VnWTNnOUlqRTJNQ0lnWTNrdFpqRWhJSEk5SWpNeUlpQm1hV3hzUFNJaVptWm1JaTgrUEdOcGNtTnNaU0JqZUMwaU16VXlJaUJqZVQwaU1UWXdJaUJiUFNJek1pSWdabWxzYkQwaUlXWm1aaUkvUGp4amFYSmpiR1VnWTNnOUlqRTJNQ0lnWTNrdElqTTFNaUlnY2owaU16SWlJR1pwYkd3OUlqSm1abVlpTHo0OFl5bHlZMnhMSUdOeklITjFaU0lnWTNrdElqTTFNaUlnY2owaU16SWlJR1pwYkd3OUlqSm1abVlpTHo0K1BDOXpkbWMrIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwifV19">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts Inter & Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f5ff',
+                            100: '#e0ebff',
+                            500: '#4f46e5',
+                            600: '#4338ca',
+                            700: '#3730a3',
+                        },
+                        accent: {
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans JP"', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+        }
+        .dark .glass-panel {
+            background: rgba(17, 24, 39, 0.85);
+            border: 1px solid rgba(55, 65, 81, 0.5);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .slot-animation {
+            animation: slotSpin 0.3s ease-out;
+        }
+        @keyframes slotSpin {
+            0% { transform: translateY(-20px); opacity: 0.3; }
+            50% { transform: translateY(15px); opacity: 0.7; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col font-sans transition-colors duration-200">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 w-full glass-panel border-b border-slate-200/80 dark:border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+                        <i class="fa-solid fa-wand-magic-sparkles text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold leading-none gradient-text">Cross Matrix</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">掛け合わせ発想 & マンダラート Workshop</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <nav class="hidden md:flex space-x-1 bg-slate-200/60 dark:bg-slate-800/60 p-1 rounded-xl">
+                    <button onclick="switchTab('generator')" id="nav-generator" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm">
+                        <i class="fa-solid fa-shuffle text-xs"></i>
+                        <span>発想・マンダラート</span>
+                    </button>
+                    <button onclick="switchTab('history')" id="nav-history" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600">
+                        <i class="fa-solid fa-bookmark text-xs"></i>
+                        <span>保存済みアイディア</span>
+                        <span id="history-badge" class="ml-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 px-2 py-0.5 rounded-full text-xs font-semibold">0</span>
+                    </button>
+                    <button onclick="switchTab('wordbank')" id="nav-wordbank" class="px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600">
+                        <i class="fa-solid fa-layer-group text-xs"></i>
+                        <span>単語バンク管理</span>
+                    </button>
+                </nav>
+
+                <!-- Actions -->
+                <div class="flex items-center space-x-2">
+                    <button onclick="openSettingsModal()" class="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition" title="API設定">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <button id="theme-toggle" onclick="toggleDarkMode()" class="p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-moon dark:hidden"></i>
+                        <i class="fa-solid fa-sun hidden dark:block"></i>
+                    </button>
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden px-4 pt-2 pb-4 space-y-1 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+            <button onclick="switchTab('generator'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-3 text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/50">
+                <i class="fa-solid fa-shuffle"></i>
+                <span>発想・マンダラート</span>
+            </button>
+            <button onclick="switchTab('history'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-3 text-slate-600 dark:text-slate-300">
+                <i class="fa-solid fa-bookmark"></i>
+                <span>保存済みアイディア</span>
+            </button>
+            <button onclick="switchTab('wordbank'); toggleMobileMenu()" class="w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium flex items-center space-x-3 text-slate-600 dark:text-slate-300">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>単語バンク管理</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= TAB 1: GENERATOR & MANDALART ================= -->
+        <section id="tab-generator" class="space-y-8">
+            
+            <!-- Top Controls & Slot Machine Section -->
+            <div class="glass-panel p-6 sm:p-8 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200/80 dark:border-slate-800 relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-64 h-64 bg-pink-500/10 dark:bg-pink-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex flex-col lg:flex-row items-center justify-between gap-6 relative z-10">
+                    
+                    <!-- Slot Machine Controls Left -->
+                    <div class="w-full lg:w-1/3 space-y-3">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">カテゴリーフィルター (グループA)</label>
+                        <select id="cat-select-a" onchange="updateWordCategoryFilter()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none shadow-sm">
+                            <option value="all">すべての単語 (All)</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                    <!-- Center Slot Cards -->
+                    <div class="w-full lg:w-2/3 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 my-2">
+                        <!-- Card A -->
+                        <div class="w-full sm:w-1/2 bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-slate-800 dark:to-indigo-950/40 border-2 border-indigo-200 dark:border-indigo-800/60 rounded-2xl p-4 sm:p-6 text-center shadow-md relative group">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 block mb-1">要素 A (ベース)</span>
+                            <div id="slot-a" class="text-xl sm:text-2xl font-black text-slate-800 dark:text-white min-h-[2rem] flex items-center justify-center transition-all">電話</div>
+                            <button onclick="randomizeSingle('A')" class="absolute top-2 right-2 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 p-1.5 text-xs transition" title="この要素のみ再抽選">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+
+                        <!-- Cross Icon -->
+                        <div class="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold text-lg shadow-lg shrink-0 my-1 sm:my-0">
+                            ✕
+                        </div>
+
+                        <!-- Card B -->
+                        <div class="w-full sm:w-1/2 bg-gradient-to-br from-purple-50 to-pink-100/50 dark:from-slate-800 dark:to-purple-950/40 border-2 border-purple-200 dark:border-purple-800/60 rounded-2xl p-4 sm:p-6 text-center shadow-md relative group">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-purple-500 dark:text-purple-400 block mb-1">要素 B (掛け合わせ)</span>
+                            <div id="slot-b" class="text-xl sm:text-2xl font-black text-slate-800 dark:text-white min-h-[2rem] flex items-center justify-center transition-all">カメラ</div>
+                            <button onclick="randomizeSingle('B')" class="absolute top-2 right-2 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 p-1.5 text-xs transition" title="この要素のみ再抽選">
+                                <i class="fa-solid fa-rotate-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Slot Machine Controls Right -->
+                    <div class="w-full lg:w-1/3 space-y-3">
+                        <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">カテゴリーフィルター (グループB)</label>
+                        <select id="cat-select-b" onchange="updateWordCategoryFilter()" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-purple-500 focus:outline-none shadow-sm">
+                            <option value="all">すべての単語 (All)</option>
+                            <!-- Populated dynamically -->
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- Action Button Row -->
+                <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <button onclick="rollSlots()" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-bold text-base shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3">
+                        <i class="fa-solid fa-dice text-lg"></i>
+                        <span>ランダムに掛け合わせる</span>
+                    </button>
+
+                    <button onclick="generateAIBrainstorm()" id="btn-ai-generate" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-base shadow-md hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center space-x-3 border border-slate-700 dark:border-slate-200">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400 dark:text-amber-500 text-lg"></i>
+                        <span>Gemini AIでアイデア自動生成</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- AI Idea Summary & Mandal-Art Matrix Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+                <!-- Left Column: AI Concept Brief & Action Deck (4 Cols) -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="glass-panel p-6 rounded-2xl shadow-md space-y-4 relative">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                            <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                <span>AIコンセプト提案</span>
+                            </h3>
+                            <span id="ai-status-tag" class="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">待機中</span>
+                        </div>
+
+                        <!-- Skeleton Loader -->
+                        <div id="ai-loader" class="hidden space-y-3 py-4 animate-pulse">
+                            <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4"></div>
+                            <div class="h-12 bg-slate-200 dark:bg-slate-700 rounded"></div>
+                            <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded w-5/6"></div>
+                            <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded w-2/3"></div>
+                        </div>
+
+                        <!-- AI Generated Content Display -->
+                        <div id="ai-content-display" class="space-y-4">
+                            <div>
+                                <label class="text-xs font-semibold text-slate-400 block mb-1">コンセプト名</label>
+                                <p id="ai-title" class="text-lg font-bold text-indigo-600 dark:text-indigo-400">「電話 × カメラ」</p>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-semibold text-slate-400 block mb-1">コアコンセプト概要</label>
+                                <p id="ai-summary" class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+                                    上記のボタンを押すと、AIが2つの要素の特性を抽象化し、革新的なプロダクトやサービスのアイデアとマンダラート展開を提案します。
+                                </p>
+                            </div>
+
+                            <div>
+                                <label class="text-xs font-semibold text-slate-400 block mb-1">想定ターゲット・ユースケース</label>
+                                <ul id="ai-usecases" class="text-xs text-slate-600 dark:text-slate-300 space-y-1.5 list-disc list-inside">
+                                    <li>要素をランダムに組み合わせてインスピレーションを得る</li>
+                                    <li>AIで8方向の発想軸（マンダラート）を展開する</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Quick Action Tools -->
+                        <div class="pt-2 flex items-center justify-between gap-2 border-t border-slate-200 dark:border-slate-800">
+                            <button onclick="saveCurrentIdea()" class="flex-1 px-3 py-2 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 text-indigo-600 dark:text-indigo-300 rounded-lg text-xs font-semibold transition flex items-center justify-center space-x-1.5">
+                                <i class="fa-regular fa-bookmark"></i>
+                                <span>アイデアを保存</span>
+                            </button>
+                            <button onclick="copyMandalArtText()" class="px-3 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold transition" title="テキスト形式でコピー">
+                                <i class="fa-regular fa-copy"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Mandal-Art 3x3 Interactive Grid (8 Cols) -->
+                <div class="lg:col-span-8 space-y-4">
+                    <div class="glass-panel p-6 rounded-2xl shadow-md border border-slate-200/80 dark:border-slate-800">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-slate-800 dark:text-white flex items-center space-x-2">
+                                    <i class="fa-solid fa-table-cells text-indigo-500"></i>
+                                    <span>マンダラート 9マス発想マトリクス</span>
+                                </h3>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">中央のメインテーマから周囲8マスへ展開。各セルを直接編集・深掘りできます。</p>
+                            </div>
+                            <button onclick="clearMandalArt()" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition">
+                                <i class="fa-solid fa-eraser mr-1"></i>クリア
+                            </button>
+                        </div>
+
+                        <!-- 3x3 Mandal-Art Grid Container -->
+                        <div class="grid grid-cols-3 gap-2.5 sm:gap-3 aspect-square max-w-2xl mx-auto p-2 bg-slate-200/60 dark:bg-slate-800/60 rounded-2xl">
+                            
+                            <!-- Cell 0 (Top-Left) -->
+                            <div onclick="editCell(0)" id="mandal-cell-0" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">01. ターゲット</span>
+                                <p id="mandal-text-0" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">リアルタイム映像通話</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 1 (Top-Center) -->
+                            <div onclick="editCell(1)" id="mandal-cell-1" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">02. 機能拡張</span>
+                                <p id="mandal-text-1" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">光学ズームレンズ搭載</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 2 (Top-Right) -->
+                            <div onclick="editCell(2)" id="mandal-cell-2" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">03. 利用シーン</span>
+                                <p id="mandal-text-2" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">旅先からの即時SNS共有</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 3 (Middle-Left) -->
+                            <div onclick="editCell(3)" id="mandal-cell-3" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">04. 技術要素</span>
+                                <p id="mandal-text-3" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">AI画像認識・補正</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 4 (Center - Main Theme) -->
+                            <div id="mandal-cell-center" class="bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 rounded-xl p-3 sm:p-4 flex flex-col justify-between text-white shadow-lg relative overflow-hidden">
+                                <div class="absolute -right-4 -bottom-4 w-16 h-16 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+                                <span class="text-[10px] font-bold text-indigo-100 uppercase tracking-widest">コアテーマ</span>
+                                <p id="mandal-text-center" class="text-xs sm:text-base font-extrabold text-center my-auto drop-shadow">電話 × カメラ</p>
+                                <span class="text-[9px] text-right text-indigo-200 font-medium">中心要素</span>
+                            </div>
+
+                            <!-- Cell 5 (Middle-Right) -->
+                            <div onclick="editCell(5)" id="mandal-cell-5" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">05. 新価値</span>
+                                <p id="mandal-text-5" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">視覚情報の瞬時伝送</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 6 (Bottom-Left) -->
+                            <div onclick="editCell(6)" id="mandal-cell-6" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">06. デザイン</span>
+                                <p id="mandal-text-6" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">薄型マルチレンズ筐体</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 7 (Bottom-Center) -->
+                            <div onclick="editCell(7)" id="mandal-cell-7" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">07. ビジネス</span>
+                                <p id="mandal-text-7" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">クラウドストレージ月額</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                            <!-- Cell 8 (Bottom-Right) -->
+                            <div onclick="editCell(8)" id="mandal-cell-8" class="group relative bg-white dark:bg-slate-900 rounded-xl p-3 sm:p-4 flex flex-col justify-between cursor-pointer hover:ring-2 hover:ring-indigo-400 transition-all shadow-sm">
+                                <span class="text-[10px] font-bold text-slate-400 group-hover:text-indigo-500">08. 課題解決</span>
+                                <p id="mandal-text-8" class="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 line-clamp-3 my-auto">現場作業の遠隔指示</p>
+                                <i class="fa-solid fa-pen text-[10px] text-slate-300 opacity-0 group-hover:opacity-100 absolute bottom-2 right-2"></i>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ================= TAB 2: SAVED IDEAS HISTORY ================= -->
+        <section id="tab-history" class="hidden space-y-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white">保存済みアイディア</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">作成した掛け合わせ発想とマンダラートの履歴を閲覧・管理できます。</p>
+                </div>
+                <button onclick="clearAllHistory()" class="px-3 py-1.5 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-semibold transition">
+                    <i class="fa-solid fa-trash-can mr-1.5"></i>すべて削除
+                </button>
+            </div>
+
+            <!-- History Cards Container -->
+            <div id="history-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Cards render dynamically -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="history-empty" class="glass-panel p-12 text-center rounded-2xl space-y-3">
+                <i class="fa-solid fa-box-open text-4xl text-slate-300 dark:text-slate-600"></i>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-medium">まだ保存されたアイディアはありません。</p>
+                <button onclick="switchTab('generator')" class="px-4 py-2 bg-indigo-600 text-white text-xs font-bold rounded-lg shadow">最初のアイディアを作る</button>
+            </div>
+        </section>
+
+        <!-- ================= TAB 3: CUSTOM WORD BANK MANAGER ================= -->
+        <section id="tab-wordbank" class="hidden space-y-6">
+            <!-- Return to Home Button -->
+            <div class="mb-2">
+                <button onclick="switchTab('generator')" class="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold flex items-center space-x-2 transition shadow-sm w-fit">
+                    <i class="fa-solid fa-arrow-left"></i><span>ホーム画面に戻る</span>
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-800 dark:text-white">単語バンク管理 (ユーザーカスタマイズ)</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">ご自身の業界（農業、金融、不動産等）や関心のある用語を自由に追加・編集できます。</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="resetDefaultWords()" class="px-3 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold transition">
+                        初期状態に戻す
+                    </button>
+                </div>
+            </div>
+
+            <!-- Suggestion Panel (New Feature) -->
+            <div class="glass-panel p-6 rounded-2xl shadow-md border border-slate-200/80 dark:border-slate-800">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="font-bold text-slate-800 dark:text-white text-sm flex items-center space-x-2">
+                            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                            <span>ランダム単語提案から追加</span>
+                        </h3>
+                        <p class="text-[10px] text-slate-500 mt-1">追加したい単語を選んでリストに登録できます。</p>
+                    </div>
+                    <button onclick="suggestRandomWords()" class="px-3 py-2 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/60 dark:text-indigo-300 hover:bg-indigo-200 rounded-lg text-xs font-bold transition flex items-center space-x-1">
+                        <i class="fa-solid fa-dice"></i><span>5つ提案する</span>
+                    </button>
+                </div>
+                <div id="suggested-words-container" class="flex flex-wrap gap-2 mb-4 min-h-[40px]">
+                    <p class="text-xs text-slate-400 my-auto">「5つ提案する」ボタンを押してください</p>
+                </div>
+                <div id="suggested-words-actions" class="hidden grid grid-cols-1 md:grid-cols-12 gap-4 items-end border-t border-slate-200 dark:border-slate-700 pt-4">
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">カテゴリー</label>
+                        <select id="suggest-word-cat" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <option value="インスピレーション">インスピレーション</option>
+                            <option value="テクノロジー">テクノロジー</option>
+                            <option value="身の回りの品">身の回りの品</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">グループ指定</label>
+                        <select id="suggest-word-group" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <option value="both">両グループ (A & B)</option>
+                            <option value="A">グループA (ベース用)</option>
+                            <option value="B">グループB (掛け合わせ用)</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-4">
+                        <button onclick="addSelectedSuggestedWords()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition flex items-center justify-center space-x-1">
+                            <i class="fa-solid fa-plus text-xs"></i><span>選択した単語を追加</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Word Form & Filter -->
+            <div class="glass-panel p-6 rounded-2xl shadow-md border border-slate-200/80 dark:border-slate-800 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                <div class="md:col-span-4">
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">新しい単語</label>
+                    <input type="text" id="new-word-input" placeholder="例: ドローン、スマートコントラクト" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">カテゴリー</label>
+                    <select id="new-word-cat" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="身の回りの品">身の回りの品 (Everyday)</option>
+                        <option value="テクノロジー">テクノロジー (Tech)</option>
+                        <option value="農業・フード">農業・フード (Agri/Food)</option>
+                        <option value="金融・フィンテック">金融・フィンテック (Finance)</option>
+                        <option value="不動産・建設">不動産・建設 (Real Estate)</option>
+                        <option value="ヘルスケア">ヘルスケア (Healthcare)</option>
+                        <option value="教育・エンタメ">教育・エンタメ (Edu/Ent)</option>
+                    </select>
+                </div>
+                <div class="md:col-span-3">
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">グループ指定</label>
+                    <select id="new-word-group" class="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="both">両グループ (A & B)</option>
+                        <option value="A">グループA (ベース用)</option>
+                        <option value="B">グループB (掛け合わせ用)</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <button onclick="addNewWord()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold shadow transition flex items-center justify-center space-x-1">
+                        <i class="fa-solid fa-plus text-xs"></i>
+                        <span>追加する</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Words List Table / Cards -->
+            <div class="glass-panel rounded-2xl shadow-md border border-slate-200/80 dark:border-slate-800 overflow-hidden">
+                <div class="p-4 bg-slate-100/70 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <h3 class="font-bold text-sm text-slate-700 dark:text-slate-200">登録済み単語リスト (<span id="total-words-count">0</span>件)</h3>
+                    <div class="w-48">
+                        <input type="text" id="word-search" oninput="renderWordBank()" placeholder="単語を検索..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg px-3 py-1 text-xs focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="p-4 max-h-[500px] overflow-y-auto">
+                    <div id="word-bank-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                        <!-- Dynamic Word Chips -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Cell Editing -->
+    <div id="edit-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-800 dark:text-white text-base">マス（セル）の編集</h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">内容テキスト</label>
+                <textarea id="modal-cell-text" rows="3" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button onclick="closeEditModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold">キャンセル</button>
+                <button onclick="saveCellEdit()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- API Settings Modal -->
+    <div id="settings-modal" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                <h3 class="font-bold text-slate-800 dark:text-white text-base"><i class="fa-solid fa-gear mr-2 text-slate-500"></i>設定 (APIキー)</h3>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">
+                    GitHub Pages等の静的環境でAI機能を利用するには、ご自身の <strong>Gemini APIキー</strong> が必要です。<br>
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-500 hover:underline">Google AI Studio</a> から無料で取得できます。キーはブラウザ(ローカル)にのみ保存されます。
+                </p>
+                <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">Gemini API Key</label>
+                <input type="password" id="api-key-input" placeholder="AIzaSy..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+            </div>
+            <div class="flex items-center justify-end space-x-2 pt-2">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-600 dark:text-slate-300 rounded-lg text-xs font-semibold">キャンセル</button>
+                <button onclick="saveApiKey()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* Default Preset Word Bank */
+        const DEFAULT_WORDS = [
+            // 身の回りの品
+            { id: 1, text: "電話", category: "身の回りの品", group: "both" },
+            { id: 2, text: "時計", category: "身の回りの品", group: "both" },
+            { id: 3, text: "机", category: "身の回りの品", group: "both" },
+            { id: 4, text: "傘", category: "身の回りの品", group: "both" },
+            { id: 5, text: "冷蔵庫", category: "身の回りの品", group: "both" },
+            { id: 6, text: "靴", category: "身の回りの品", group: "both" },
+            
+            // テクロノジー
+            { id: 7, text: "PC", category: "テクノロジー", group: "both" },
+            { id: 8, text: "カメラ", category: "テクノロジー", group: "both" },
+            { id: 9, text: "AI / 機械学習", category: "テクノロジー", group: "both" },
+            { id: 10, text: "ドローン", category: "テクノロジー", group: "both" },
+            { id: 11, text: "GPSセンサー", category: "テクノロジー", group: "both" },
+            { id: 12, text: "ブロックチェーン", category: "テクノロジー", group: "both" },
+
+            // 農業・フード
+            { id: 13, text: "ビニールハウス", category: "農業・フード", group: "both" },
+            { id: 14, text: "有機野菜", category: "農業・フード", group: "both" },
+            { id: 15, text: "自動散水機", category: "農業・フード", group: "both" },
+            { id: 16, text: "キッチンカー", category: "農業・フード", group: "both" },
+
+            // 金融・フィンテック
+            { id: 17, text: "クレジットカード", category: "金融・フィンテック", group: "both" },
+            { id: 18, text: "自動積立", category: "金融・フィンテック", group: "both" },
+            { id: 19, text: "マイクロ融資", category: "金融・フィンテック", group: "both" },
+
+            // 不動産・建設
+            { id: 20, text: "コワーキングスペース", category: "不動産・建設", group: "both" },
+            { id: 21, text: "空き家", category: "不動産・建設", group: "both" },
+            { id: 22, text: "太陽光パネル", category: "不動産・建設", group: "both" },
+
+            // ヘルスケア
+            { id: 23, text: "スマートウォッチ", category: "ヘルスケア", group: "both" },
+            { id: 24, text: "オンライン診療", category: "ヘルスケア", group: "both" },
+
+            // 教育・エンタメ
+            { id: 25, text: "ボードゲーム", category: "教育・エンタメ", group: "both" },
+            { id: 26, text: "VRヘッドセット", category: "教育・エンタメ", group: "both" }
+        ];
+
+        /* Application State */
+        let state = {
+            words: [],
+            currentA: "電話",
+            currentB: "カメラ",
+            mandalData: Array(8).fill(""),
+            aiConcept: {
+                title: "電話 × カメラ",
+                summary: "2つの要素の特性を抽象化し、革新的なプロダクトやサービスのアイデアとマンダラート展開を提案します。",
+                usecases: ["イノベーションアイデアの創出", "新規事業プロトタイピング"]
+            },
+            history: [],
+            activeModalCellIndex: null
+        };
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initStorage();
+            populateCategorySelects();
+            renderWordBank();
+            renderHistory();
+            setupDefaultMandal();
+            
+            // Load API Key to Settings Modal
+            document.getElementById('api-key-input').value = getApiKey();
+        });
+
+        function initStorage() {
+            // Load Words
+            const savedWords = localStorage.getItem('cross_matrix_words');
+            if (savedWords) {
+                try {
+                    state.words = JSON.parse(savedWords);
+                } catch(e) {
+                    state.words = [...DEFAULT_WORDS];
+                }
+            } else {
+                state.words = [...DEFAULT_WORDS];
+                saveWordsToStorage();
+            }
+
+            // Load History
+            const savedHistory = localStorage.getItem('cross_matrix_history');
+            if (savedHistory) {
+                try {
+                    state.history = JSON.parse(savedHistory);
+                    updateHistoryBadge();
+                } catch(e) {
+                    state.history = [];
+                }
+            }
+        }
+
+        function saveWordsToStorage() {
+            localStorage.setItem('cross_matrix_words', JSON.stringify(state.words));
+            document.getElementById('total-words-count').innerText = state.words.length;
+        }
+
+        function saveHistoryToStorage() {
+            localStorage.setItem('cross_matrix_history', JSON.stringify(state.history));
+            updateHistoryBadge();
+        }
+
+        function updateHistoryBadge() {
+            document.getElementById('history-badge').innerText = state.history.length;
+        }
+
+        /* Category Filter Setup */
+        function populateCategorySelects() {
+            const categories = [...new Set(state.words.map(w => w.category))];
+            const selectA = document.getElementById('cat-select-a');
+            const selectB = document.getElementById('cat-select-b');
+
+            selectA.innerHTML = '<option value="all">すべての単語 (All)</option>';
+            selectB.innerHTML = '<option value="all">すべての単語 (All)</option>';
+
+            categories.forEach(cat => {
+                selectA.innerHTML += `<option value="${cat}">${cat}</option>`;
+                selectB.innerHTML += `<option value="${cat}">${cat}</option>`;
+            });
+        }
+
+        /* Random Slot Machine Roll */
+        function rollSlots() {
+            const catA = document.getElementById('cat-select-a').value;
+            const catB = document.getElementById('cat-select-b').value;
+
+            let poolA = state.words.filter(w => w.group === 'both' || w.group === 'A');
+            let poolB = state.words.filter(w => w.group === 'both' || w.group === 'B');
+
+            if (catA !== 'all') poolA = poolA.filter(w => w.category === catA);
+            if (catB !== 'all') poolB = poolB.filter(w => w.category === catB);
+
+            if (poolA.length === 0 || poolB.length === 0) {
+                showToast("選択されたカテゴリに十分な単語がありません", "warning");
+                return;
+            }
+
+            const slotElA = document.getElementById('slot-a');
+            const slotElB = document.getElementById('slot-b');
+
+            // Animation effect
+            slotElA.classList.add('slot-animation');
+            slotElB.classList.add('slot-animation');
+
+            setTimeout(() => {
+                const randomA = poolA[Math.floor(Math.random() * poolA.length)].text;
+                let randomB = poolB[Math.floor(Math.random() * poolB.length)].text;
+
+                // Avoid identical roll if possible
+                if (randomA === randomB && poolB.length > 1) {
+                    const filteredB = poolB.filter(w => w.text !== randomA);
+                    randomB = filteredB[Math.floor(Math.random() * filteredB.length)].text;
+                }
+
+                state.currentA = randomA;
+                state.currentB = randomB;
+
+                slotElA.innerText = randomA;
+                slotElB.innerText = randomB;
+
+                // Update center theme cell in Mandalart
+                document.getElementById('mandal-text-center').innerText = `${randomA} × ${randomB}`;
+
+                slotElA.classList.remove('slot-animation');
+                slotElB.classList.remove('slot-animation');
+            }, 150);
+        }
+
+        function randomizeSingle(target) {
+            if (target === 'A') {
+                const pool = state.words.filter(w => w.group === 'both' || w.group === 'A');
+                const rand = pool[Math.floor(Math.random() * pool.length)].text;
+                state.currentA = rand;
+                document.getElementById('slot-a').innerText = rand;
+            } else {
+                const pool = state.words.filter(w => w.group === 'both' || w.group === 'B');
+                const rand = pool[Math.floor(Math.random() * pool.length)].text;
+                state.currentB = rand;
+                document.getElementById('slot-b').innerText = rand;
+            }
+            document.getElementById('mandal-text-center').innerText = `${state.currentA} × ${state.currentB}`;
+        }
+
+        /* API Key Management */
+        function openSettingsModal() {
+            document.getElementById('api-key-input').value = getApiKey();
+            document.getElementById('settings-modal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settings-modal').classList.add('hidden');
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('api-key-input').value.trim();
+            localStorage.setItem('cross_matrix_api_key', key);
+            showToast("APIキーを保存しました", "success");
+            closeSettingsModal();
+        }
+
+        function getApiKey() {
+            return localStorage.getItem('cross_matrix_api_key') || "";
+        }
+
+        /* Gemini AI API Integration */
+        async function generateAIBrainstorm() {
+            const apiKey = getApiKey();
+            if (!apiKey) {
+                showToast("APIキーが設定されていません。設定(歯車マーク)からAPIキーを入力してください。", "warning");
+                openSettingsModal();
+                return;
+            }
+
+            const itemA = state.currentA;
+            const itemB = state.currentB;
+
+            // UI Loader State
+            const loader = document.getElementById('ai-loader');
+            const contentDisplay = document.getElementById('ai-content-display');
+            const statusTag = document.getElementById('ai-status-tag');
+            const btnGenerate = document.getElementById('btn-ai-generate');
+
+            loader.classList.remove('hidden');
+            contentDisplay.classList.add('opacity-40');
+            statusTag.innerText = "生成中...";
+            statusTag.className = "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 animate-pulse";
+            btnGenerate.disabled = true;
+
+            const prompt = `あなたは世界的なイノベーションコンサルタントおよびアイデア発想のスペシャリストです。
+異なる性質の2つの要素「${itemA}」と「${itemB}」を掛け合わせた革新的なプロダクト、サービス、または事業アイデアを考え出してください。
+
+以下のJSONフォーマットのみで出力してください（マークダウンのコードブロック不要、余計な説明テキスト不要）。
+
+{
+  "conceptTitle": "キャッチーで革新的なプロジェクト名/製品名",
+  "conceptSummary": "掛け合わせによって生まれる価値や解決する課題の簡潔な説明（120文字以内）",
+  "targetUseCases": [
+    "ターゲット・ユースケース1",
+    "ターゲット・ユースケース2",
+    "ターゲット・ユースケース3"
+  ],
+  "mandalArtExpansion": [
+    "展開要素1 (ターゲット・ニーズ)",
+    "展開要素2 (コア技術/仕組み)",
+    "展開要素3 (利用シーン/UX)",
+    "展開要素4 (デザイン/形状)",
+    "展開要素5 (ビジネスモデル)",
+    "展開要素6 (差別化ポイント)",
+    "展開要素7 (課題解決)",
+    "展開要素8 (将来の発展性)"
+  ]
+}`;
+
+            try {
+                // Call standard Gemini API (gemini-1.5-flash)
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: {
+                            responseMimeType: "application/json"
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    if (response.status === 400) throw new Error("不正なリクエストです。APIキーが間違っている可能性があります。");
+                    if (response.status === 403) throw new Error("APIキーの権限がありません。有効なキーか確認してください。");
+                    if (response.status === 404) throw new Error("指定されたモデルが見つかりません。");
+                    throw new Error(`APIリクエスト失敗 (Status: ${response.status})`);
+                }
+
+                const result = await response.json();
+                
+                // Parse the response text
+                let rawText = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (rawText) {
+                    // APIがマークダウンブロック(```json)を含めてしまった場合の対策
+                    rawText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const data = JSON.parse(rawText);
+                    
+                    // Update State and UI
+                    state.aiConcept.title = data.conceptTitle || `${itemA} × ${itemB}`;
+                    state.aiConcept.summary = data.conceptSummary || "";
+                    state.aiConcept.usecases = data.targetUseCases || [];
+                    
+                    if (data.mandalArtExpansion && Array.isArray(data.mandalArtExpansion)) {
+                        state.mandalData = data.mandalArtExpansion.slice(0, 8);
+                    }
+
+                    updateAIDisplayUI();
+                    updateMandalArtGridUI();
+                    showToast("AIによるアイディア提案を生成しました！", "success");
+                } else {
+                    throw new Error("APIレスポンスの形式が不正です。");
+                }
+
+            } catch (error) {
+                console.error("Gemini AI API Error:", error);
+                if (error instanceof SyntaxError) {
+                    showToast("AIの出力形式エラーです。もう一度お試しください。", "error");
+                } else if (error.message === "Failed to fetch") {
+                    showToast("ネットワークエラーが発生しました。通信環境をご確認ください。", "error");
+                } else {
+                    showToast(`エラー: ${error.message}`, "error");
+                }
+            } finally {
+                loader.classList.add('hidden');
+                contentDisplay.classList.remove('opacity-40');
+                statusTag.innerText = "完了";
+                statusTag.className = "text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300";
+                btnGenerate.disabled = false;
+            }
+        }
+
+        function updateAIDisplayUI() {
+            document.getElementById('ai-title').innerText = state.aiConcept.title;
+            document.getElementById('ai-summary').innerText = state.aiConcept.summary;
+            
+            const usecasesEl = document.getElementById('ai-usecases');
+            usecasesEl.innerHTML = state.aiConcept.usecases.map(uc => `<li>${uc}</li>`).join('');
+        }
+
+        function setupDefaultMandal() {
+            state.mandalData = [
+                "リアルタイム映像通話",
+                "光学ズームレンズ搭載",
+                "旅先からの即時共有",
+                "AI画像認識・自動補正",
+                "視覚情報の瞬時伝送",
+                "薄型マルチレンズ筐体",
+                "クラウド保存サブスク",
+                "現場作業の遠隔指示"
+            ];
+            updateMandalArtGridUI();
+        }
+
+        function updateMandalArtGridUI() {
+            document.getElementById('mandal-text-center').innerText = `${state.currentA} × ${state.currentB}`;
+            
+            // Cells 0..3 map to 0..3, Cell 4 is center, Cells 5..8 map to indices 4..7 in data
+            const gridMap = [0, 1, 2, 3, 5, 6, 7, 8];
+            gridMap.forEach((gridIdx, dataIdx) => {
+                const textEl = document.getElementById(`mandal-text-${gridIdx}`);
+                if (textEl) {
+                    textEl.innerText = state.mandalData[dataIdx] || "クリックして入力";
+                }
+            });
+        }
+
+        /* Modal Cell Editing */
+        function editCell(gridIdx) {
+            const dataIdx = gridIdx > 4 ? gridIdx - 1 : gridIdx;
+            state.activeModalCellIndex = dataIdx;
+            
+            const currentText = state.mandalData[dataIdx] || "";
+            document.getElementById('modal-cell-text').value = currentText;
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.add('hidden');
+            state.activeModalCellIndex = null;
+        }
+
+        function saveCellEdit() {
+            if (state.activeModalCellIndex !== null) {
+                const newText = document.getElementById('modal-cell-text').value;
+                state.mandalData[state.activeModalCellIndex] = newText;
+                updateMandalArtGridUI();
+                closeEditModal();
+                showToast("マスの内容を更新しました", "info");
+            }
+        }
+
+        function clearMandalArt() {
+            state.mandalData = Array(8).fill("");
+            updateMandalArtGridUI();
+            showToast("マンダラートをクリアしました", "info");
+        }
+
+        /* History & Saving System */
+        function saveCurrentIdea() {
+            const newItem = {
+                id: Date.now(),
+                createdAt: new Date().toLocaleDateString('ja-JP') + ' ' + new Date().toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'}),
+                itemA: state.currentA,
+                itemB: state.currentB,
+                conceptTitle: state.aiConcept.title,
+                conceptSummary: state.aiConcept.summary,
+                usecases: [...state.aiConcept.usecases],
+                mandalData: [...state.mandalData]
+            };
+
+            state.history.unshift(newItem);
+            saveHistoryToStorage();
+            renderHistory();
+            showToast("アイディアを保存しました！", "success");
+        }
+
+        function renderHistory() {
+            const listEl = document.getElementById('history-list');
+            const emptyEl = document.getElementById('history-empty');
+
+            if (state.history.length === 0) {
+                listEl.innerHTML = "";
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+
+            emptyEl.classList.add('hidden');
+            listEl.innerHTML = state.history.map(item => `
+                <div class="glass-panel p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 space-y-3 relative group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-full">
+                            ${item.itemA} × ${item.itemB}
+                        </span>
+                        <span class="text-[10px] text-slate-400">${item.createdAt}</span>
+                    </div>
+
+                    <h4 class="font-bold text-slate-800 dark:text-white text-base">${item.conceptTitle}</h4>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 line-clamp-2">${item.conceptSummary}</p>
+
+                    <!-- Mini Mandalart 3x3 Preview -->
+                    <div class="grid grid-cols-3 gap-1 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-lg text-[9px] text-center text-slate-500">
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[0] || '-'}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[1] || '-'}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[2] || '-'}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[3] || '-'}</div>
+                        <div class="bg-indigo-600 text-white font-bold p-1 rounded truncate">${item.itemA}x${item.itemB}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[4] || '-'}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[5] || '-'}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[6] || '-'}</div>
+                        <div class="bg-white dark:bg-slate-900 p-1 rounded truncate">${item.mandalData[7] || '-'}</div>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-200/60 dark:border-slate-800">
+                        <button onclick="loadHistoryToEditor(${item.id})" class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:underline">
+                            <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i>ワークショップで開く
+                        </button>
+                        <button onclick="deleteHistoryItem(${item.id})" class="text-slate-400 hover:text-rose-500 text-xs transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadHistoryToEditor(id) {
+            const item = state.history.find(h => h.id === id);
+            if (!item) return;
+
+            state.currentA = item.itemA;
+            state.currentB = item.itemB;
+            document.getElementById('slot-a').innerText = item.itemA;
+            document.getElementById('slot-b').innerText = item.itemB;
+
+            state.aiConcept.title = item.conceptTitle;
+            state.aiConcept.summary = item.conceptSummary;
+            state.aiConcept.usecases = [...item.usecases];
+            state.mandalData = [...item.mandalData];
+
+            updateAIDisplayUI();
+            updateMandalArtGridUI();
+            switchTab('generator');
+            showToast("選択したアイディアを読み込みました", "info");
+        }
+
+        function deleteHistoryItem(id) {
+            state.history = state.history.filter(h => h.id !== id);
+            saveHistoryToStorage();
+            renderHistory();
+            showToast("アイディアを削除しました", "info");
+        }
+
+        function clearAllHistory() {
+            if (state.history.length === 0) return;
+            state.history = [];
+            saveHistoryToStorage();
+            renderHistory();
+            showToast("すべての履歴をクリアしました", "info");
+        }
+
+        /* Custom Word Bank Functions */
+        function renderWordBank() {
+            const grid = document.getElementById('word-bank-grid');
+            const searchQuery = (document.getElementById('word-search')?.value || '').toLowerCase();
+
+            const filteredWords = state.words.filter(w => 
+                w.text.toLowerCase().includes(searchQuery) || 
+                w.category.toLowerCase().includes(searchQuery)
+            );
+
+            grid.innerHTML = filteredWords.map(w => `
+                <div class="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 p-2.5 rounded-xl flex items-center justify-between shadow-sm group">
+                    <div class="truncate mr-2">
+                        <span class="block text-xs font-bold text-slate-800 dark:text-slate-100 truncate">${w.text}</span>
+                        <span class="text-[9px] text-slate-400 block">${w.category}</span>
+                    </div>
+                    <button onclick="deleteWord(${w.id})" class="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition p-1 text-xs">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function addNewWord() {
+            const input = document.getElementById('new-word-input');
+            const text = input.value.trim();
+            const category = document.getElementById('new-word-cat').value;
+            const group = document.getElementById('new-word-group').value;
+
+            if (!text) {
+                showToast("単語を入力してください", "warning");
+                return;
+            }
+
+            const newWord = {
+                id: Date.now(),
+                text: text,
+                category: category,
+                group: group
+            };
+
+            state.words.push(newWord);
+            saveWordsToStorage();
+            populateCategorySelects();
+            renderWordBank();
+
+            input.value = "";
+            showToast(`単語「${text}」を追加しました`, "success");
+        }
+
+        function deleteWord(id) {
+            state.words = state.words.filter(w => w.id !== id);
+            saveWordsToStorage();
+            populateCategorySelects();
+            renderWordBank();
+            showToast("単語を削除しました", "info");
+        }
+
+        function resetDefaultWords() {
+            state.words = [...DEFAULT_WORDS];
+            saveWordsToStorage();
+            populateCategorySelects();
+            renderWordBank();
+            showToast("単語リストを初期値にリセットしました", "info");
+        }
+
+        /* Random Word Suggestion Feature */
+        const SUGGESTION_POOL = [
+            "メタバース", "量子コンピュータ", "スマートグラス", "宇宙旅行", "培養肉", 
+            "NFT", "ロボットアーム", "3Dプリンター", "ホログラム", "自動運転車", 
+            "サウナ", "キャンプギア", "観葉植物", "コーヒーメーカー", "スマートロック", 
+            "電動キックボード", "ドッグラン", "古民家", "サブスクリプション", "クラウドファンディング", 
+            "シェアハウス", "バイオミメティクス", "タイムマシン", "ガチャガチャ", "キャンピングカー",
+            "電子辞書", "サプリメント", "万年筆", "焚き火", "プロジェクター"
+        ];
+        let currentSuggestions = [];
+        let selectedSuggestions = new Set();
+
+        function suggestRandomWords() {
+            // Shuffle array and pick first 5
+            const shuffled = [...SUGGESTION_POOL].sort(() => 0.5 - Math.random());
+            currentSuggestions = shuffled.slice(0, 5);
+            selectedSuggestions.clear();
+            renderSuggestedWords();
+        }
+
+        function renderSuggestedWords() {
+            const container = document.getElementById('suggested-words-container');
+            const actions = document.getElementById('suggested-words-actions');
+            
+            if (currentSuggestions.length === 0) {
+                 container.innerHTML = '<p class="text-xs text-slate-400 my-auto">「5つ提案する」ボタンを押してください</p>';
+                 actions.classList.add('hidden');
+                 return;
+            }
+
+            actions.classList.remove('hidden');
+            container.innerHTML = currentSuggestions.map(word => {
+                const isSelected = selectedSuggestions.has(word);
+                const baseClass = "px-4 py-2 rounded-full text-sm font-medium cursor-pointer transition-all border flex items-center select-none";
+                const activeClass = isSelected 
+                    ? "bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-500/30 ring-2 ring-indigo-300 dark:ring-indigo-800" 
+                    : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-indigo-400 hover:shadow-sm";
+                
+                const icon = isSelected 
+                    ? '<i class="fa-solid fa-check mr-1.5 text-xs"></i>' 
+                    : '<i class="fa-solid fa-plus mr-1.5 text-xs opacity-50"></i>';
+
+                return `<div onclick="toggleSuggestedWord('${word}')" class="${baseClass} ${activeClass}">${icon}${word}</div>`;
+            }).join('');
+        }
+
+        function toggleSuggestedWord(word) {
+            if (selectedSuggestions.has(word)) {
+                selectedSuggestions.delete(word);
+            } else {
+                selectedSuggestions.add(word);
+            }
+            renderSuggestedWords();
+        }
+
+        function addSelectedSuggestedWords() {
+            if (selectedSuggestions.size === 0) {
+                showToast("追加する単語を一つ以上選択してください", "warning");
+                return;
+            }
+            
+            const category = document.getElementById('suggest-word-cat').value;
+            const group = document.getElementById('suggest-word-group').value;
+            
+            selectedSuggestions.forEach(word => {
+                // Avoid exact duplicates in the current words state
+                if (!state.words.find(w => w.text === word && w.group === group)) {
+                    state.words.push({
+                        id: Date.now() + Math.random(), // ensure unique ID
+                        text: word,
+                        category: category,
+                        group: group
+                    });
+                }
+            });
+            
+            saveWordsToStorage();
+            populateCategorySelects();
+            renderWordBank();
+            
+            showToast(`${selectedSuggestions.size}件の単語を追加しました！`, "success");
+            
+            // Clear selections after adding
+            selectedSuggestions.clear();
+            renderSuggestedWords();
+        }
+
+        /* Copy Mandal-Art to Clipboard */
+        function copyMandalArtText() {
+            const text = `【掛け合わせ発想マンダラート】
+テーマ: ${state.currentA} × ${state.currentB}
+コンセプト名: ${state.aiConcept.title}
+概要: ${state.aiConcept.summary}
+
+[ 9マス展開 ]
+1. ${state.mandalData[0] || '-'} | 2. ${state.mandalData[1] || '-'} | 3. ${state.mandalData[2] || '-'}
+4. ${state.mandalData[3] || '-'} | [ ${state.currentA} × ${state.currentB} ] | 5. ${state.mandalData[4] || '-'}
+6. ${state.mandalData[5] || '-'} | 7. ${state.mandalData[6] || '-'} | 8. ${state.mandalData[7] || '-'}`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("テキスト形式でクリップボードにコピーしました！", "success");
+            }).catch(() => {
+                showToast("コピーに失敗しました", "error");
+            });
+        }
+
+        /* Navigation & Tabs */
+        function switchTab(tabName) {
+            ['generator', 'history', 'wordbank'].forEach(t => {
+                const section = document.getElementById(`tab-${t}`);
+                const navBtn = document.getElementById(`nav-${t}`);
+                
+                if (t === tabName) {
+                    section.classList.remove('hidden');
+                    if (navBtn) {
+                        navBtn.className = "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm";
+                    }
+                } else {
+                    section.classList.add('hidden');
+                    if (navBtn) {
+                        navBtn.className = "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 text-slate-600 dark:text-slate-300 hover:text-indigo-600";
+                    }
+                }
+            });
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        /* Theme Toggle */
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        /* Toast Notifications */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const bgColors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                warning: 'bg-amber-500 text-white',
+                info: 'bg-slate-800 text-white'
+            };
+
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-exclamation',
+                warning: 'fa-triangle-exclamation',
+                info: 'fa-circle-info'
+            };
+
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-xs font-semibold flex items-center space-x-2 transition-all duration-300 transform translate-y-2 opacity-0 ${bgColors[type] || bgColors.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type]} text-sm"></i><span>${message}</span>`;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
