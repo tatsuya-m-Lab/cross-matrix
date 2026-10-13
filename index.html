@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cross Matrix - 掛け合わせ発想 & マンダラート</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#8b5cf6', // Purple-500
+                        secondary: '#ec4899', // Pink-500
+                        dark: '#0f172a', // Slate-900
+                    },
+                    fontFamily: {
+                        sans: ['"Inter"', '"Hiragino Sans"', '"Hiragino Kaku Gothic ProN"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc; /* Very light gray/white */
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Hide scrollbar for a native app feel */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        
+        /* Mandal-Art Grid */
+        .mandal-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            background-color: #f1f5f9;
+            padding: 6px;
+            border-radius: 16px;
+        }
+        .mandal-cell {
+            background: white;
+            aspect-ratio: 1/1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.8rem;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #334155;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            word-break: break-word;
+        }
+        .mandal-center {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(139, 92, 246, 0.3);
+        }
+
+        /* Spinner */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-slate-800 antialiased min-h-screen pb-24">
+
+    <header class="glass sticky top-0 z-40 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M215.79,118.17a8,8,0,0,0-5-5l-43.74-15.34L151.74,54.07a8,8,0,0,0-15.11.23l-16,46.52-44.59,13a8,8,0,0,0-5.26,5.26l-13,44.59a8,8,0,0,0,.23,15.11l46.52,16,15.34,43.74a8,8,0,0,0,15.12,0l15.34-43.74,46.52-16a8,8,0,0,0,.23-15.11ZM154,166.42a8,8,0,0,0-5.59,5.59l-10.43,29.74L127.52,172a8,8,0,0,0-5.59-5.59L92.19,156l29.74-10.43a8,8,0,0,0,5.59-5.59l10.43-29.74,10.43,29.74a8,8,0,0,0,5.59,5.59L183.71,156ZM251.65,58.85l-19-6.68-6.68-19a8,8,0,0,0-15.12,0l-6.68,19-19,6.68a8,8,0,0,0,0,15.12l19,6.68,6.68,19a8,8,0,0,0,15.12,0l6.68-19,19-6.68a8,8,0,0,0,0-15.12Z"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-[1.1rem] font-bold text-primary leading-tight">Cross Matrix</h1>
+                <p class="text-[0.65rem] text-slate-500 font-medium">掛け合わせ発想 & マンダラート Workshop</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 text-slate-600">
+            <button onclick="toggleModal('apiModal')" class="p-1 hover:text-primary transition" aria-label="Settings">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40q-2.16-.06-4.32,0L107.2,25.08a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.48a8,8,0,0,0-3.93,6L67.32,64.2q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84q-.06,2.16,0,4.32L25.08,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,4.16,7.31l19.11,15.33a91.56,91.56,0,0,1-6.23,15.06l-21.43-2.39a8,8,0,0,0-8.34,3.45,73.59,73.59,0,0,1-6.17,6.17,8,8,0,0,0-3.45,8.34l2.39,21.43a91.56,91.56,0,0,1-15.06,6.23L166.52,192a8,8,0,0,0-7.31-4.16,73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-7.31,4.16L127.89,211.1a91.55,91.55,0,0,1-15.06-6.23l2.39-21.43a8,8,0,0,0-3.45-8.34,73.59,73.59,0,0,1-6.17-6.17,8,8,0,0,0-8.34-3.45L75.83,177.87a91.56,91.56,0,0,1-6.23-15.06l19.11-15.33a8,8,0,0,0,4.16-7.31,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-4.16-7.31L69.6,108.85a91.56,91.56,0,0,1,6.23-15.06l21.43,2.39a8,8,0,0,0,8.34-3.45,73.59,73.59,0,0,1,6.17-6.17,8,8,0,0,0,3.45-8.34l-2.39-21.43a91.56,91.56,0,0,1,15.06-6.23L143.22,76a8,8,0,0,0,7.31,4.16,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,7.31-4.16l15.33-19.11a91.55,91.55,0,0,1,15.06,6.23l-2.39,21.43a8,8,0,0,0,3.45,8.34,73.59,73.59,0,0,1,6.17,6.17,8,8,0,0,0,8.34,3.45l20.9-2.32a91.56,91.56,0,0,1,6.23,15.06l-19.11,15.33A8,8,0,0,0,199.9,123.66Z"></path></svg>
+            </button>
+            <button onclick="showToast('ダークモードは準備中です', 'bg-slate-800')" class="p-1 hover:text-primary transition" aria-label="Dark Mode">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M233.54,142.23a8,8,0,0,0-8-1.84,86.4,86.4,0,0,1-109.67-109.67,8,8,0,0,0-9.85-9.85A104,104,0,1,0,245.24,152.08,8,8,0,0,0,233.54,142.23ZM128,216A88,88,0,0,1,50.7,100.91,102.53,102.53,0,0,0,155.09,205.3,87.72,87.72,0,0,1,128,216Z"></path></svg>
+            </button>
+            <button onclick="toggleModal('wordsModal')" class="p-1 hover:text-primary transition" aria-label="Menu">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H40a8,8,0,0,1,0-16H216A8,8,0,0,1,224,128ZM40,72H216a8,8,0,0,0,0-16H40a8,8,0,0,0,0,16ZM216,184H40a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Z"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto mt-6 px-4 space-y-6">
+        
+        <!-- White card container containing the elements -->
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 relative overflow-hidden">
+            <!-- Group A Section -->
+            <div class="mb-2">
+                <label class="block text-xs text-slate-500 font-bold mb-2">カテゴリーフィルター (グループA)</label>
+                <div class="relative">
+                    <select class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 rounded-xl leading-tight focus:outline-none focus:border-primary text-sm shadow-sm">
+                        <option>すべての単語 (All)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Element A Card -->
+            <div class="bg-blue-50/60 border border-blue-100 rounded-2xl p-5 relative cursor-pointer active:scale-95 transition-transform" onclick="randomizeSingle('A')">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-blue-600 tracking-wide">要素 A (ベース)</span>
+                    <button class="text-blue-400 hover:text-blue-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11.8-10.9A79.44,79.44,0,0,0,128,208h1.29A80,80,0,0,0,128,48H86.83V72a8,8,0,0,1-13.66,5.66l-48-48a8,8,0,0,1,0-11.32l48-48A8,8,0,0,1,86.83,16V40H128a96,96,0,0,1,96,88ZM70.83,40,46.17,64,70.83,88.66Z"></path></svg>
+                    </button>
+                </div>
+                <div class="text-center py-2">
+                    <h2 id="wordA" class="text-3xl font-black text-slate-800">空き家</h2>
+                </div>
+            </div>
+
+            <!-- Purple 'X' Divider -->
+            <div class="flex justify-center -my-3 relative z-10">
+                <div class="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md border-[3px] border-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+                </div>
+            </div>
+
+            <!-- Element B Card -->
+            <div class="bg-pink-50/60 border border-pink-100 rounded-2xl p-5 relative mb-4 cursor-pointer active:scale-95 transition-transform" onclick="randomizeSingle('B')">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold text-primary tracking-wide">要素 B (掛け合わせ)</span>
+                    <button class="text-pink-400 hover:text-pink-600 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a96,96,0,0,1-94.71,96H128A95.38,95.38,0,0,1,62.1,197.8a8,8,0,0,1,11.8-10.9A79.44,79.44,0,0,0,128,208h1.29A80,80,0,0,0,128,48H86.83V72a8,8,0,0,1-13.66,5.66l-48-48a8,8,0,0,1,0-11.32l48-48A8,8,0,0,1,86.83,16V40H128a96,96,0,0,1,96,88ZM70.83,40,46.17,64,70.83,88.66Z"></path></svg>
+                    </button>
+                </div>
+                <div class="text-center py-2">
+                    <h2 id="wordB" class="text-3xl font-black text-slate-800">カメラ</h2>
+                </div>
+            </div>
+
+            <!-- Group B Filter -->
+            <div class="mb-6">
+                <label class="block text-xs text-slate-500 font-bold mb-2">カテゴリーフィルター (グループB)</label>
+                <div class="relative">
+                    <select class="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 rounded-xl leading-tight focus:outline-none focus:border-primary text-sm shadow-sm">
+                        <option>すべての単語 (All)</option>
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="space-y-3">
+                <button onclick="randomizeBoth()" class="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white font-bold py-4 px-4 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M144,80a12,12,0,1,1-12-12A12,12,0,0,1,144,80Zm-36,24a12,12,0,1,0,12,12A12,12,0,0,0,108,104Zm0,48a12,12,0,1,0,12,12A12,12,0,0,0,108,152Zm36-24a12,12,0,1,0-12-12A12,12,0,0,0,144,128Zm101-20.25a15.82,15.82,0,0,0-5.74-11l-75.14-63.53a15.93,15.93,0,0,0-19.14-.94L18.4,113.88a15.92,15.92,0,0,0-6.19,20l30,65.85A16,16,0,0,0,56.77,208h97.4a16,16,0,0,0,14.61-9.52l74.34-162.24h0A15.8,15.8,0,0,0,245,107.75ZM154.17,44.75,229.3,108.28l-54.72,119.38H56.77L26.79,161.8ZM210.8,92.51,164.71,53.5l14.49-31.62a8,8,0,0,1,14.6,6.7ZM145.48,11.59l-13-8.8a8,8,0,1,1,9.08-13.3l13,8.8a8,8,0,0,1-9.08,13.3ZM239.38,44.15A8,8,0,0,1,228.61,41l-28.71-12a8,8,0,1,1,6.21-14.75l28.71,12A8,8,0,0,1,239.38,44.15Z"></path></svg>
+                    ランダムに掛け合わせる
+                </button>
+                
+                <button id="aiButton" onclick="generateIdea()" class="w-full bg-dark hover:bg-slate-800 text-white font-bold py-4 px-4 rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-95">
+                    <svg id="aiIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M215.79,118.17a8,8,0,0,0-5-5l-43.74-15.34L151.74,54.07a8,8,0,0,0-15.11.23l-16,46.52-44.59,13a8,8,0,0,0-5.26,5.26l-13,44.59a8,8,0,0,0,.23,15.11l46.52,16,15.34,43.74a8,8,0,0,0,15.12,0l15.34-43.74,46.52-16a8,8,0,0,0,.23-15.11ZM154,166.42a8,8,0,0,0-5.59,5.59l-10.43,29.74L127.52,172a8,8,0,0,0-5.59-5.59L92.19,156l29.74-10.43a8,8,0,0,0,5.59-5.59l10.43-29.74,10.43,29.74a8,8,0,0,0,5.59,5.59L183.71,156ZM251.65,58.85l-19-6.68-6.68-19a8,8,0,0,0-15.12,0l-6.68,19-19,6.68a8,8,0,0,0,0,15.12l19,6.68,6.68,19a8,8,0,0,0,15.12,0l6.68-19,19-6.68a8,8,0,0,0,0-15.12Z"></path></svg>
+                    <div id="aiSpinner" class="loader hidden"></div>
+                    <span id="aiBtnText">Gemini AIでアイデア自動生成</span>
+                </button>
+            </div>
+        </div>
+
+        <div id="resultsSection" class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 hidden">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-100 pb-3">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                    <span class="text-xl">💡</span> AIコンセプト提案
+                </h3>
+                <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded-full border border-green-200">完了</span>
+            </div>
+            
+            <div class="space-y-5">
+                <div>
+                    <h4 class="text-[11px] text-slate-500 font-bold mb-1 uppercase tracking-wider">キャッチコピー</h4>
+                    <p id="resCatchphrase" class="text-primary font-bold text-lg leading-tight">
+                        <!-- Populated via JS -->
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-[11px] text-slate-500 font-bold mb-1 uppercase tracking-wider">事業名 / コンセプト</h4>
+                    <p id="resConcept" class="text-slate-700 font-medium text-sm leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <!-- Populated via JS -->
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-[11px] text-slate-500 font-bold mb-1 uppercase tracking-wider">ターゲット層</h4>
+                    <p id="resTarget" class="text-slate-700 font-medium text-sm leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <!-- Populated via JS -->
+                    </p>
+                </div>
+
+                <div>
+                    <h4 class="text-[11px] text-slate-500 font-bold mb-3 uppercase tracking-wider text-center">展開アイデア (マンダラート)</h4>
+                    <div class="mandal-grid">
+                        <div class="mandal-cell" id="m0"></div>
+                        <div class="mandal-cell" id="m1"></div>
+                        <div class="mandal-cell" id="m2"></div>
+                        <div class="mandal-cell" id="m3"></div>
+                        <div class="mandal-cell mandal-center" id="mCenter"></div>
+                        <div class="mandal-cell" id="m4"></div>
+                        <div class="mandal-cell" id="m5"></div>
+                        <div class="mandal-cell" id="m6"></div>
+                        <div class="mandal-cell" id="m7"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- API Settings Modal -->
+    <div id="apiModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm transition-opacity">
+        <div class="bg-white w-full max-w-sm rounded-3xl shadow-xl p-6 relative">
+            <h3 class="text-lg font-bold text-slate-800 mb-2">APIキー設定</h3>
+            <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                Gemini AIを利用するにはAPIキーが必要です。入力されたキーはブラウザのローカルストレージにのみ保存されます。
+            </p>
+            <input type="password" id="apiKeyInput" placeholder="AIzaSy..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 mb-5 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all">
+            <div class="flex gap-3">
+                <button onclick="toggleModal('apiModal')" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition">キャンセル</button>
+                <button onclick="saveApiKey()" class="flex-1 bg-primary hover:bg-primary-light text-white font-bold py-3 rounded-xl text-sm transition shadow-md">保存する</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Generic Message Box (Replaces alert) -->
+    <div id="toast" class="fixed top-4 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-5 py-3 rounded-full shadow-lg transition-all duration-300 z-50 flex items-center gap-2 -translate-y-20 opacity-0 text-sm font-medium whitespace-nowrap">
+        <span id="toastIcon">ℹ️</span>
+        <span id="toastMsg">Message</span>
+    </div>
+
+    <!-- Words Modal (Hamburger Menu) -->
+    <div id="wordsModal" class="fixed inset-0 z-50 hidden flex flex-col justify-end bg-slate-900/40 backdrop-blur-sm transition-opacity">
+        <div class="bg-white w-full rounded-t-3xl shadow-xl p-6 pb-10 max-h-[85vh] flex flex-col">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+            <h3 class="text-lg font-bold text-slate-800 mb-4">単語辞書</h3>
+            
+            <div class="flex gap-2 mb-6">
+                <select id="newWordGroup" class="bg-slate-50 border border-slate-200 text-sm rounded-xl px-3 py-3 focus:outline-none focus:border-primary">
+                    <option value="A">Group A</option>
+                    <option value="B">Group B</option>
+                </select>
+                <input type="text" id="newWordInput" placeholder="追加する単語" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm focus:outline-none focus:border-primary">
+                <button onclick="addNewWord()" class="bg-dark text-white font-bold px-5 rounded-xl text-sm hover:bg-slate-700 transition">追加</button>
+            </div>
+
+            <div class="overflow-y-auto flex-1 space-y-5">
+                <div>
+                    <h4 class="text-xs font-bold text-blue-600 mb-2 uppercase tracking-wider">要素A (ベース)</h4>
+                    <div id="listAContainer" class="flex flex-wrap gap-2"></div>
+                </div>
+                <div>
+                    <h4 class="text-xs font-bold text-pink-600 mb-2 uppercase tracking-wider">要素B (掛け合わせ)</h4>
+                    <div id="listBContainer" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+            
+            <button onclick="toggleModal('wordsModal')" class="w-full bg-slate-100 text-slate-700 font-bold py-4 mt-4 rounded-2xl text-sm transition">閉じる</button>
+        </div>
+    </div>
+
+    <script>
+        // Data arrays
+        const defaultA = ["空き家", "農業", "学校", "本", "自動車", "レストラン", "オフィス", "病院", "公園"];
+        const defaultB = ["カメラ", "AI", "サブスク", "NFT", "ドローン", "ゲーム", "ロボット", "VR", "ブロックチェーン"];
+        
+        let wordsA = [];
+        let wordsB = [];
+        let currentA = "空き家";
+        let currentB = "カメラ";
+        let apiKey = "";
+
+        // Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            updateDisplay();
+            renderDictionary();
+        });
+
+        // LocalStorage Management
+        function loadState() {
+            try {
+                wordsA = JSON.parse(localStorage.getItem('cm_wordsA')) || [...defaultA];
+                wordsB = JSON.parse(localStorage.getItem('cm_wordsB')) || [...defaultB];
+                apiKey = localStorage.getItem('cm_apiKey') || "";
+            } catch (e) {
+                wordsA = [...defaultA];
+                wordsB = [...defaultB];
+                apiKey = "";
+            }
+            if (wordsA.length === 0) wordsA = [...defaultA];
+            if (wordsB.length === 0) wordsB = [...defaultB];
+            document.getElementById('apiKeyInput').value = apiKey;
+        }
+
+        function saveState() {
+            localStorage.setItem('cm_wordsA', JSON.stringify(wordsA));
+            localStorage.setItem('cm_wordsB', JSON.stringify(wordsB));
+        }
+
+        // Modals & Toast
+        function toggleModal(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        }
+
+        function saveApiKey() {
+            const val = document.getElementById('apiKeyInput').value.trim();
+            apiKey = val;
+            localStorage.setItem('cm_apiKey', val);
+            toggleModal('apiModal');
+            showToast("APIキーを保存しました", "✅", "bg-green-600");
+        }
+
+        function showToast(msg, icon = "ℹ️", bgClass = "bg-slate-800") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            document.getElementById('toastIcon').innerText = icon;
+            
+            toast.className = `fixed top-4 left-1/2 transform -translate-x-1/2 ${bgClass} text-white px-5 py-3 rounded-full shadow-lg transition-all duration-300 z-50 flex items-center gap-2 translate-y-0 opacity-100 text-sm font-medium whitespace-nowrap`;
+            
+            setTimeout(() => {
+                toast.classList.add('-translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        // Core App Logic
+        function updateDisplay() {
+            document.getElementById('wordA').innerText = currentA;
+            document.getElementById('wordB').innerText = currentB;
+        }
+
+        function randomizeSingle(group) {
+            const el = document.getElementById(`word${group}`);
+            el.style.opacity = '0';
+            el.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                if(group === 'A') {
+                    currentA = wordsA[Math.floor(Math.random() * wordsA.length)];
+                } else {
+                    currentB = wordsB[Math.floor(Math.random() * wordsB.length)];
+                }
+                updateDisplay();
+                el.style.opacity = '1';
+                el.style.transform = 'scale(1)';
+                el.style.transition = 'all 0.2s ease-out';
+            }, 150);
+        }
+
+        function randomizeBoth() {
+            randomizeSingle('A');
+            randomizeSingle('B');
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
+        // Word Dictionary
+        function renderDictionary() {
+            const buildHtml = (list, group) => {
+                return list.map((w, i) => `
+                    <span class="inline-flex items-center gap-1 bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm">
+                        ${w}
+                        <button onclick="removeWord('${group}', ${i})" class="text-slate-400 hover:text-red-500 ml-1 rounded-full p-0.5">×</button>
+                    </span>
+                `).join('');
+            };
+            document.getElementById('listAContainer').innerHTML = buildHtml(wordsA, 'A');
+            document.getElementById('listBContainer').innerHTML = buildHtml(wordsB, 'B');
+        }
+
+        function addNewWord() {
+            const group = document.getElementById('newWordGroup').value;
+            const input = document.getElementById('newWordInput');
+            const val = input.value.trim();
+            if(!val) return;
+            
+            if(group === 'A') {
+                if(!wordsA.includes(val)) wordsA.unshift(val);
+            } else {
+                if(!wordsB.includes(val)) wordsB.unshift(val);
+            }
+            
+            input.value = "";
+            saveState();
+            renderDictionary();
+        }
+
+        function removeWord(group, index) {
+            if(group === 'A') wordsA.splice(index, 1);
+            else wordsB.splice(index, 1);
+            saveState();
+            renderDictionary();
+        }
+
+        async function generateIdea() {
+            if(!apiKey) {
+                toggleModal('apiModal');
+                showToast("APIキーを設定してください", "🔑");
+                return;
+            }
+
+            // Set Loading UI
+            const btn = document.getElementById('aiButton');
+            const icon = document.getElementById('aiIcon');
+            const spinner = document.getElementById('aiSpinner');
+            const text = document.getElementById('aiBtnText');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            text.innerText = 'アイデア生成中...';
+            document.getElementById('resultsSection').classList.add('hidden');
+
+            const payload = {
+                contents: [{
+                    parts: [{ 
+                        text: `あなたは優秀な事業企画プランナーです。「${currentA}」と「${currentB}」を掛け合わせた、革新的で具体的なビジネスアイデアを1つ考案してください。必ず指示されたJSONフォーマットで回答すること。`
+                    }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            "catchphrase": { type: "STRING", description: "サービスを象徴する魅力的なキャッチコピー（短め）" },
+                            "concept": { type: "STRING", description: "事業名とビジネスコンセプト（100文字程度の詳細な説明）" },
+                            "target": { type: "STRING", description: "メインのターゲット層とその抱える課題" },
+                            "mandalart": {
+                                type: "ARRAY",
+                                items: { type: "STRING" },
+                                description: "この事業を拡張するための機能、価値、関連キーワード。必ず8つの短い単語を含めること。"
+                            }
+                        },
+                        required: ["catchphrase", "concept", "target", "mandalart"]
+                    }
+                }
+            };
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const err = await response.json().catch(()=>({}));
+                    const msg = err.error?.message || `HTTPエラー: ${response.status}`;
+                    throw new Error(msg);
+                }
+
+                const result = await response.json();
+                const jsonStr = result.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (!jsonStr) {
+                    throw new Error("AIから有効なテキストが返却されませんでした。");
+                }
+
+                // Robust JSON parsing
+                let data;
+                try {
+                    data = JSON.parse(jsonStr);
+                } catch (parseErr) {
+                    console.error("Parse Error:", jsonStr);
+                    throw new Error("AIのレスポンス（JSON）の解析に失敗しました。");
+                }
+
+                renderResults(data);
+
+            } catch (error) {
+                console.error("API Error:", error);
+                showToast(`エラー: ${error.message}`, "⚠️", "bg-red-600");
+            } finally {
+                // Restore UI
+                btn.disabled = false;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                spinner.classList.add('hidden');
+                icon.classList.remove('hidden');
+                text.innerText = 'Gemini AIでアイデア自動生成';
+            }
+        }
+
+        function renderResults(data) {
+            // Validate output
+            const catchphrase = data.catchphrase || "キャッチコピーが生成されませんでした";
+            const concept = data.concept || "コンセプトデータがありません";
+            const target = data.target || "ターゲットデータがありません";
+            const mWords = Array.isArray(data.mandalart) ? data.mandalart : [];
+
+            // Bind data
+            document.getElementById('resCatchphrase').innerText = `「${catchphrase}」`;
+            document.getElementById('resConcept').innerText = concept;
+            document.getElementById('resTarget').innerText = target;
+            
+            // Render Mandal-Art
+            document.getElementById('mCenter').innerText = `${currentA}\n×\n${currentB}`;
+            for(let i = 0; i < 8; i++) {
+                document.getElementById(`m${i}`).innerText = mWords[i] || "---";
+            }
+
+            // Show and scroll
+            const resSec = document.getElementById('resultsSection');
+            resSec.classList.remove('hidden');
+            
+            setTimeout(() => {
+                resSec.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 150);
+        }
+    </script>
+</body>
+</html>
