@@ -1,0 +1,685 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Sparkles, BookOpen, Home, Plus, X, RefreshCw, Loader2, 
+  Sun, Moon, PlusCircle, ArrowRight, Lightbulb,
+  Copy, Check, Bookmark, Trash2
+} from 'lucide-react';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+import { getFirestore, doc, setDoc, onSnapshot } from 'firebase/firestore';
+
+// --- Firebase Initialization ---
+const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+
+// Default Defaults
+const DEFAULT_WORDS_A = ["スマートフォン", "空き家", "自動車", "レストラン", "学校", "自転車", "靴"];
+const DEFAULT_WORDS_B = ["カメラ", "AI", "太陽光パネル", "ブロックチェーン", "植物", "センサー", "サブスク"];
+
+export default function App() {
+  const [user, setUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // 1. Authenticate before Firestore
+  useEffect(() => {
+    const initAuth = async () => {
+      try {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+      } catch (err) {
+        console.error('Auth error:', err);
+      }
+    };
+    initAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 text-slate-500">
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-slate-900 text-slate-500">
+        Authentication failed.
+      </div>
+    );
+  }
+
+  return <MainApp user={user} />;
+}
+
+// --- Main Application ---
+function MainApp({ user }) {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [currentView, setCurrentView] = useState('home'); 
+  
+  // App Data State
+  const [wordsA, setWordsA] = useState([]);
+  const [wordsB, setWordsB] = useState([]);
+  const [savedIdeas, setSavedIdeas] = useState([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  // Home State
+  const [currentA, setCurrentA] = useState('');
+  const [currentB, setCurrentB] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [ideaResult, setIdeaResult] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
+
+  // Dictionary State
+  const [isSuggestingA, setIsSuggestingA] = useState(false);
+  const [isSuggestingB, setIsSuggestingB] = useState(false);
+  const [suggestedWordsA, setSuggestedWordsA] = useState([]);
+  const [suggestedWordsB, setSuggestedWordsB] = useState([]);
+
+  // Fetch from Firestore
+  useEffect(() => {
+    if (!user) return;
+    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'dictionary', 'data');
+    
+    const unsubscribe = onSnapshot(docRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data();
+        setWordsA(data.wordsA || DEFAULT_WORDS_A);
+        setWordsB(data.wordsB || DEFAULT_WORDS_B);
+        setSavedIdeas(data.savedIdeas || []);
+      } else {
+        setWordsA(DEFAULT_WORDS_A);
+        setWordsB(DEFAULT_WORDS_B);
+        setSavedIdeas([]);
+        setDoc(docRef, { wordsA: DEFAULT_WORDS_A, wordsB: DEFAULT_WORDS_B, savedIdeas: [] }, { merge: true });
+      }
+      setIsDataLoaded(true);
+    }, (error) => {
+      console.error("Firestore error:", error);
+      setWordsA(DEFAULT_WORDS_A);
+      setWordsB(DEFAULT_WORDS_B);
+      setSavedIdeas([]);
+      setIsDataLoaded(true);
+    });
+
+    return () => unsubscribe();
+  }, [user]);
+
+  // Handle Dark Mode Class
+  useEffect(() => {
+    if (isDarkMode) document.documentElement.classList.add('dark');
+    else document.documentElement.classList.remove('dark');
+  }, [isDarkMode]);
+
+  const saveWordsToFirebase = async (newA, newB) => {
+    if (!user) return;
+    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'dictionary', 'data');
+    try {
+      await setDoc(docRef, { wordsA: newA, wordsB: newB }, { merge: true });
+    } catch (e) {
+      console.error("Save error:", e);
+    }
+  };
+
+  const saveIdeasToFirebase = async (newSavedIdeas) => {
+    if (!user) return;
+    const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'dictionary', 'data');
+    try {
+      await setDoc(docRef, { savedIdeas: newSavedIdeas }, { merge: true });
+    } catch (e) {
+      console.error("Save ideas error:", e);
+    }
+  };
+
+  const handleToggleSaveIdea = () => {
+    if (!ideaResult) return;
+    const ideaId = `${currentA}-${currentB}-${ideaResult.conceptName}`;
+    const isSaved = savedIdeas.some(idea => idea.id === ideaId);
+    
+    let updatedIdeas;
+    if (isSaved) {
+        updatedIdeas = savedIdeas.filter(idea => idea.id !== ideaId);
+    } else {
+        const newIdea = {
+            id: ideaId,
+            wordA: currentA,
+            wordB: currentB,
+            ...ideaResult,
+            timestamp: Date.now()
+        };
+        updatedIdeas = [newIdea, ...savedIdeas];
+    }
+    setSavedIdeas(updatedIdeas);
+    saveIdeasToFirebase(updatedIdeas);
+  };
+
+  const handleDeleteSavedIdea = (id) => {
+    const updatedIdeas = savedIdeas.filter(idea => idea.id !== id);
+    setSavedIdeas(updatedIdeas);
+    saveIdeasToFirebase(updatedIdeas);
+  };
+
+  const handleCopyIdea = () => {
+    if (!ideaResult) return;
+    const textToCopy = `【${ideaResult.conceptName}】\n掛け合わせ: ${currentA} × ${currentB}\n\n${ideaResult.referenceIdea}\n\n[展開キーワード]\n${ideaResult.mandalArtKeywords.join(' / ')}`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
+
+  const addWord = (group, word) => {
+    const trimmed = word.trim();
+    if (!trimmed) return;
+    if (group === 'A') {
+      if (wordsA.includes(trimmed)) return;
+      const updated = [trimmed, ...wordsA];
+      setWordsA(updated);
+      saveWordsToFirebase(updated, wordsB);
+      setSuggestedWordsA(prev => prev.filter(w => w !== trimmed)); // Remove from suggestions
+    } else {
+      if (wordsB.includes(trimmed)) return;
+      const updated = [trimmed, ...wordsB];
+      setWordsB(updated);
+      saveWordsToFirebase(wordsA, updated);
+      setSuggestedWordsB(prev => prev.filter(w => w !== trimmed)); // Remove from suggestions
+    }
+  };
+
+  const removeWord = (group, word) => {
+    if (group === 'A') {
+      const updated = wordsA.filter(w => w !== word);
+      setWordsA(updated);
+      saveWordsToFirebase(updated, wordsB);
+    } else {
+      const updated = wordsB.filter(w => w !== word);
+      setWordsB(updated);
+      saveWordsToFirebase(wordsA, updated);
+    }
+  };
+
+  const callGemini = async (prompt, schema) => {
+    const apiKey = ""; // Injected automatically
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+    
+    const payload = {
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: { responseMimeType: "application/json", responseSchema: schema }
+    };
+
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) throw new Error("API request failed");
+    const result = await response.json();
+    let jsonStr = result.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!jsonStr) throw new Error("No valid response from API");
+    
+    // Strip markdown formatting if occasionally present
+    jsonStr = jsonStr.replace(/```json\n?|\n?```/g, '');
+    return JSON.parse(jsonStr);
+  };
+
+  const handleGenerateIdea = async () => {
+    if (wordsA.length === 0 || wordsB.length === 0) return;
+    
+    const randomA = wordsA[Math.floor(Math.random() * wordsA.length)];
+    const randomB = wordsB[Math.floor(Math.random() * wordsB.length)];
+    setCurrentA(randomA);
+    setCurrentB(randomB);
+    
+    setIsGenerating(true);
+    setIdeaResult(null);
+
+    const prompt = `あなたは優秀なイノベーターです。「${randomA}」と「${randomB}」を掛け合わせた、斬新で革新的な製品・サービスのアイディアを1つ考案してください。また、そのアイディアを中心に「マンダラート（9マス発想法）」を展開するための関連キーワード（機能、価値、ターゲット層など）を必ず8つ挙げてください。`;
+    
+    const schema = {
+      type: "OBJECT",
+      properties: {
+        conceptName: { type: "STRING", description: "考えたサービス/製品のキャッチーな名前" },
+        referenceIdea: { type: "STRING", description: "結合から生まれた新しいアイディアの解説（3〜4文程度で魅力的に）" },
+        mandalArtKeywords: { type: "ARRAY", items: { type: "STRING" }, description: "アイディアを拡張するための関連キーワードを必ず8つ" }
+      },
+      required: ["conceptName", "referenceIdea", "mandalArtKeywords"]
+    };
+
+    try {
+      const data = await callGemini(prompt, schema);
+      let keywords = data.mandalArtKeywords || [];
+      while (keywords.length < 8) keywords.push("...");
+      if (keywords.length > 8) keywords = keywords.slice(0, 8);
+      
+      setIdeaResult({
+        conceptName: data.conceptName,
+        referenceIdea: data.referenceIdea,
+        mandalArtKeywords: keywords
+      });
+    } catch (e) {
+      console.error("Idea Gen Error:", e);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleSuggestWords = async (group) => {
+    const isGroupA = group === 'A';
+    isGroupA ? setIsSuggestingA(true) : setIsSuggestingB(true);
+    
+    const context = isGroupA 
+      ? "日常的なモノ、場所、伝統的な産業、身近な課題（例: 農業, 家, 傘, 学校）" 
+      : "最新テクノロジー、ビジネスモデル、自然科学、トレンド（例: AI, サブスク, ドローン, 宇宙）";
+    
+    const prompt = `新しいビジネスアイディアのブレインストーミングに使えそうな、ランダムで興味深くインスピレーションを刺激する「${context}」を表す名詞を5つ提案してください。一般的なものと少し変わったものを混ぜてください。`;
+    
+    const schema = {
+      type: "OBJECT",
+      properties: {
+        suggestedWords: { type: "ARRAY", items: { type: "STRING" }, description: "提案する5つの単語" }
+      },
+      required: ["suggestedWords"]
+    };
+
+    try {
+      const data = await callGemini(prompt, schema);
+      if (isGroupA) setSuggestedWordsA(data.suggestedWords || []);
+      else setSuggestedWordsB(data.suggestedWords || []);
+    } catch (e) {
+      console.error("Suggest Error:", e);
+    } finally {
+      isGroupA ? setIsSuggestingA(false) : setIsSuggestingB(false);
+    }
+  };
+
+  if (!isDataLoaded) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center transition-colors duration-500 ${isDarkMode ? 'bg-slate-900 text-slate-400' : 'bg-slate-50 text-slate-500'}`}>
+        <Loader2 className="w-8 h-8 animate-spin" />
+      </div>
+    );
+  }
+
+  // --- Theme Classes ---
+  const tAppBg = isDarkMode ? "bg-slate-900" : "bg-slate-50";
+  const tTextMain = isDarkMode ? "text-slate-100" : "text-slate-800";
+  const tHeaderBg = isDarkMode ? "bg-slate-900/80 border-slate-800" : "bg-white/80 border-slate-200";
+  const tCardBg = isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-100";
+  
+  return (
+    <div className={`min-h-screen transition-colors duration-300 font-sans pb-24 ${isDarkMode ? 'dark' : ''} ${tAppBg}`}>
+      
+      {/* Header */}
+      <header className={`sticky top-0 z-40 backdrop-blur-md border-b px-4 py-3 flex items-center justify-between transition-colors duration-300 ${tHeaderBg}`}>
+        <div className="flex items-center gap-3">
+          <div className="bg-gradient-to-br from-indigo-500 to-purple-500 w-10 h-10 rounded-xl flex items-center justify-center text-white shadow-lg">
+            <Lightbulb className="w-5 h-5" />
+          </div>
+          <h1 className={`font-bold text-lg tracking-tight ${tTextMain}`}>Cross Idea Gen</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            className="p-2 rounded-full bg-slate-200/50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all active:scale-95"
+            aria-label="Toggle Dark Mode"
+          >
+            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
+        </div>
+      </header>
+
+      <main className="max-w-3xl mx-auto p-4 mt-6">
+        {currentView === 'home' && (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            
+            {/* Title & Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className={`text-2xl font-bold ${tTextMain}`}>アイデアを生成する</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">異なる要素を掛け合わせて、新しい価値を発見しましょう。</p>
+              </div>
+              <button 
+                onClick={() => setCurrentView('dictionary')}
+                className="inline-flex items-center justify-center gap-2 bg-indigo-50 dark:bg-indigo-500/10 hover:bg-indigo-100 dark:hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 font-semibold py-2.5 px-5 rounded-xl transition-all border border-indigo-200 dark:border-indigo-500/30"
+              >
+                <BookOpen className="w-4 h-4" /> 単語を管理する
+              </button>
+            </div>
+
+            {/* Idea Generation Card */}
+            <div className={`${tCardBg} rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300 text-center relative overflow-hidden group`}>
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-4">
+                <div className="bg-indigo-50 dark:bg-slate-900 border border-indigo-100 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300 px-6 py-5 rounded-2xl w-full sm:w-2/5 shadow-inner text-xl sm:text-2xl font-bold flex items-center justify-center break-words transition-colors">
+                  {currentA || '???'}
+                </div>
+                <div className="text-slate-300 dark:text-slate-600 font-black text-2xl">
+                  <X className="w-8 h-8" />
+                </div>
+                <div className="bg-pink-50 dark:bg-slate-900 border border-pink-100 dark:border-pink-500/30 text-pink-700 dark:text-pink-300 px-6 py-5 rounded-2xl w-full sm:w-2/5 shadow-inner text-xl sm:text-2xl font-bold flex items-center justify-center break-words transition-colors">
+                  {currentB || '???'}
+                </div>
+              </div>
+
+              <button 
+                onClick={handleGenerateIdea}
+                disabled={isGenerating || wordsA.length === 0 || wordsB.length === 0}
+                className="mt-10 w-full sm:w-3/4 mx-auto bg-slate-900 dark:bg-white disabled:opacity-50 text-white dark:text-slate-900 font-bold py-4 px-8 rounded-2xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all active:scale-95 flex items-center justify-center gap-3 text-lg"
+              >
+                {isGenerating ? (
+                  <><Loader2 className="w-6 h-6 animate-spin" /> AIがアイデアを考案中...</>
+                ) : (
+                  <><Sparkles className="w-6 h-6" /> 掛け合わせて発想する</>
+                )}
+              </button>
+            </div>
+
+            {/* Results Section */}
+            {ideaResult && !isGenerating && (
+              <div className="space-y-6 animate-in fade-in zoom-in-95 duration-500">
+                {/* Concept Definition */}
+                <div className={`${tCardBg} rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300 relative`}>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg text-xs font-bold uppercase tracking-wider border border-amber-200 dark:border-amber-800 w-max">
+                      <Lightbulb className="w-3.5 h-3.5" /> AI Concept
+                    </div>
+                    
+                    <div className="flex items-center gap-2 self-end sm:self-auto">
+                      <button
+                        onClick={handleCopyIdea}
+                        className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full transition-colors active:scale-95 flex items-center justify-center"
+                        aria-label="Copy Idea"
+                      >
+                        {isCopied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={handleToggleSaveIdea}
+                        className={`p-2 rounded-full transition-colors active:scale-95 flex items-center justify-center ${
+                            savedIdeas.some(idea => idea.id === `${currentA}-${currentB}-${ideaResult.conceptName}`) 
+                            ? "bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400" 
+                            : "bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300"
+                        }`}
+                        aria-label="Save Idea"
+                      >
+                        <Bookmark className="w-4 h-4" fill={savedIdeas.some(idea => idea.id === `${currentA}-${currentB}-${ideaResult.conceptName}`) ? "currentColor" : "none"} />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <h3 className={`font-extrabold text-2xl sm:text-3xl mb-4 leading-tight ${tTextMain}`}>
+                    {ideaResult.conceptName}
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed text-base sm:text-lg">
+                    {ideaResult.referenceIdea}
+                  </p>
+                </div>
+
+                {/* Mandal-Art Grid */}
+                <div className={`${tCardBg} rounded-3xl p-6 sm:p-8 shadow-sm transition-colors duration-300`}>
+                  <h3 className={`font-bold text-lg mb-6 text-center ${tTextMain}`}>
+                    Mandal-Art Expansion
+                  </h3>
+                  
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3 aspect-square max-w-md mx-auto">
+                    {[0, 1, 2, 3].map(i => (
+                      <div key={i} className="bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-center p-3 text-center text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 break-words shadow-inner transition-colors">
+                        {ideaResult.mandalArtKeywords[i]}
+                      </div>
+                    ))}
+                    
+                    {/* Center Cell */}
+                    <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex flex-col items-center justify-center p-2 text-center text-white shadow-lg relative overflow-hidden group">
+                      <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                      <span className="font-black text-sm sm:text-base leading-tight">
+                        {currentA}<br/><span className="text-xs font-medium opacity-75 my-1 block">×</span>{currentB}
+                      </span>
+                    </div>
+
+                    {[4, 5, 6, 7].map(i => (
+                      <div key={i} className="bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700/50 border border-slate-200 dark:border-slate-700 rounded-2xl flex items-center justify-center p-3 text-center text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300 break-words shadow-inner transition-colors">
+                        {ideaResult.mandalArtKeywords[i]}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Saved Ideas Section */}
+            {savedIdeas.length > 0 && (
+              <div className="mt-12 space-y-4 animate-in fade-in duration-500">
+                <div className="flex items-center gap-2 mb-4 px-2">
+                  <Bookmark className="w-5 h-5 text-indigo-500" fill="currentColor" />
+                  <h3 className={`text-xl font-bold ${tTextMain}`}>保存済みアイデア</h3>
+                  <span className="bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2.5 py-0.5 rounded-full text-xs font-bold">{savedIdeas.length}</span>
+                </div>
+                
+                <div className="grid gap-4">
+                  {savedIdeas.map(idea => (
+                    <div key={idea.id} className={`${tCardBg} rounded-3xl p-5 sm:p-6 shadow-sm transition-colors duration-300 border relative group`}>
+                      <div className="flex justify-between items-start mb-4 gap-4">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold rounded-lg border border-indigo-100 dark:border-indigo-800/50">{idea.wordA}</span>
+                          <X className="w-3.5 h-3.5 text-slate-400" />
+                          <span className="px-3 py-1 bg-pink-50 dark:bg-pink-900/30 text-pink-700 dark:text-pink-300 text-xs font-bold rounded-lg border border-pink-100 dark:border-pink-800/50">{idea.wordB}</span>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => {
+                              const textToCopy = `【${idea.conceptName}】\n掛け合わせ: ${idea.wordA} × ${idea.wordB}\n\n${idea.referenceIdea}\n\n[展開キーワード]\n${idea.mandalArtKeywords.join(' / ')}`;
+                              navigator.clipboard.writeText(textToCopy);
+                            }}
+                            className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-xl transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
+                            aria-label="Copy saved idea"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteSavedIdea(idea.id)}
+                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-xl transition-colors opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
+                            aria-label="Delete saved idea"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      <h4 className={`font-bold text-lg sm:text-xl mb-3 leading-tight ${tTextMain}`}>{idea.conceptName}</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">{idea.referenceIdea}</p>
+                      
+                      <div className="flex flex-wrap gap-2">
+                        {idea.mandalArtKeywords.map((kw, idx) => (
+                          <span key={idx} className="text-[10px] sm:text-xs px-2.5 py-1 bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 rounded-lg border border-slate-200 dark:border-slate-700">
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {currentView === 'dictionary' && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+              <div>
+                <h2 className={`text-2xl font-bold ${tTextMain}`}>単語辞書 (Word Dictionary)</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">掛け合わせの元となる単語リストを管理します。</p>
+              </div>
+              <button 
+                onClick={() => setCurrentView('home')}
+                className="inline-flex items-center justify-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-2.5 px-5 rounded-xl text-sm hover:-translate-x-1 transition-transform shadow-md"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" /> ホームに戻る
+              </button>
+            </div>
+
+            {/* Dictionary Component A */}
+            <DictionarySection 
+              title="グループA (ベースとなる要素)"
+              description="既存の産業、日常的なモノ、場所など"
+              words={wordsA}
+              onAdd={(w) => addWord('A', w)}
+              onRemove={(w) => removeWord('A', w)}
+              colorTheme="indigo"
+              onSuggest={() => handleSuggestWords('A')}
+              isSuggesting={isSuggestingA}
+              suggestedWords={suggestedWordsA}
+              isDarkMode={isDarkMode}
+            />
+
+            {/* Dictionary Component B */}
+            <DictionarySection 
+              title="グループB (掛け合わせる要素)"
+              description="最新技術、新しいビジネスモデル、自然の力など"
+              words={wordsB}
+              onAdd={(w) => addWord('B', w)}
+              onRemove={(w) => removeWord('B', w)}
+              colorTheme="pink"
+              onSuggest={() => handleSuggestWords('B')}
+              isSuggesting={isSuggestingB}
+              suggestedWords={suggestedWordsB}
+              isDarkMode={isDarkMode}
+            />
+          </div>
+        )}
+      </main>
+    </div>
+  );
+}
+
+// --- Subcomponent: Dictionary Section ---
+function DictionarySection({ title, description, words, onAdd, onRemove, colorTheme, onSuggest, isSuggesting, suggestedWords, isDarkMode }) {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleAdd = () => {
+    onAdd(inputValue);
+    setInputValue('');
+  };
+
+  // Theme Generation based on props
+  const thm = colorTheme === 'indigo' ? {
+    border: 'border-indigo-200 dark:border-indigo-500/30',
+    title: 'text-indigo-700 dark:text-indigo-400',
+    btn: 'bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white',
+    ring: 'focus:ring-indigo-500/50',
+    chip: 'bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-800 dark:text-indigo-200 border-indigo-100 dark:border-indigo-500/20',
+    suggestBtn: 'hover:border-indigo-500 dark:hover:border-indigo-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-300'
+  } : {
+    border: 'border-pink-200 dark:border-pink-500/30',
+    title: 'text-pink-700 dark:text-pink-400',
+    btn: 'bg-pink-600 hover:bg-pink-700 dark:bg-pink-500 dark:hover:bg-pink-600 text-white',
+    ring: 'focus:ring-pink-500/50',
+    chip: 'bg-pink-50/50 dark:bg-pink-900/20 text-pink-800 dark:text-pink-200 border-pink-100 dark:border-pink-500/20',
+    suggestBtn: 'hover:border-pink-500 dark:hover:border-pink-400 group-hover:text-pink-600 dark:group-hover:text-pink-300'
+  };
+
+  const cardBg = isDarkMode ? "bg-slate-800 border-slate-700" : "bg-white border-slate-200";
+  const inputBg = isDarkMode ? "bg-slate-900 border-slate-700 text-slate-100" : "bg-slate-50 border-slate-200 text-slate-900";
+  const suggestAreaBg = isDarkMode ? "bg-slate-900/50 border-slate-700" : "bg-slate-50/80 border-slate-100";
+
+  return (
+    <div className={`${cardBg} rounded-3xl p-6 shadow-sm transition-colors duration-300 border`}>
+      <div className="mb-5">
+        <h3 className={`font-bold text-lg ${thm.title}`}>{title}</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{description}</p>
+      </div>
+      
+      {/* Input Row */}
+      <div className="flex gap-2 mb-6">
+        <input 
+          type="text" 
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+          placeholder="新しい単語を入力..."
+          className={`flex-1 ${inputBg} rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 ${thm.ring} transition-all`}
+        />
+        <button 
+          onClick={handleAdd}
+          className={`${thm.btn} px-5 rounded-xl flex items-center justify-center transition-colors active:scale-95 shadow-sm font-bold`}
+        >
+          <Plus className="w-5 h-5 sm:mr-1" />
+          <span className="hidden sm:inline">追加</span>
+        </button>
+      </div>
+
+      {/* AI Suggestion Section (Refined UI) */}
+      <div className={`mb-6 rounded-2xl p-5 border ${suggestAreaBg} transition-colors duration-300`}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            AIからのインスピレーション
+          </div>
+          <button 
+            onClick={onSuggest}
+            disabled={isSuggesting}
+            className="text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 px-4 py-2 rounded-xl flex items-center justify-center gap-2 font-bold transition-all disabled:opacity-50 shadow-sm active:scale-95"
+          >
+            {isSuggesting ? <Loader2 className="w-3.5 h-3.5 animate-spin"/> : <RefreshCw className="w-3.5 h-3.5" />}
+            {isSuggesting ? "生成中..." : "5つの単語を提案する"}
+          </button>
+        </div>
+        
+        {/* Suggestion Chips */}
+        {suggestedWords.length > 0 ? (
+          <div className="flex flex-wrap gap-3 animate-in fade-in duration-500">
+            {suggestedWords.map((word, idx) => (
+              <button 
+                key={idx}
+                onClick={() => onAdd(word)}
+                className={`group relative px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl transition-all shadow-sm active:scale-95 flex items-center gap-2 overflow-hidden ${thm.suggestBtn}`}
+              >
+                <div className="absolute inset-0 bg-slate-50 dark:bg-slate-700/50 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                <span className="relative z-10 font-bold text-sm text-slate-700 dark:text-slate-300 transition-colors">
+                  {word}
+                </span>
+                <PlusCircle className="relative z-10 w-4 h-4 text-slate-300 dark:text-slate-500 group-hover:text-current transition-colors" />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-slate-400 dark:text-slate-500">ボタンを押すと、AIがランダムな単語を提案します。クリックしてリストに追加できます。</p>
+        )}
+      </div>
+
+      {/* Word List */}
+      <div>
+        <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-3">登録済み単語リスト ({words.length})</h4>
+        <div className="flex flex-wrap gap-2.5">
+          {words.map((w, idx) => (
+            <div key={idx} className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold border shadow-sm transition-colors ${thm.chip}`}>
+              {w}
+              <button 
+                onClick={() => onRemove(w)}
+                className="p-1 hover:bg-slate-900/10 dark:hover:bg-white/10 rounded-full transition-colors opacity-60 hover:opacity-100 text-slate-700 dark:text-slate-300"
+                aria-label="Remove"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+          {words.length === 0 && (
+            <p className="text-sm text-slate-400 dark:text-slate-500 italic py-2">単語が登録されていません。</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
